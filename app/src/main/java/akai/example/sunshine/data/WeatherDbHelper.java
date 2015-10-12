@@ -19,7 +19,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String SQL_CREATE_LOCATION_TABLE = String.format("CREATE TABLE %s (" +
                         "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT NOT NULL, " +
+                        "%s TEXT UNIQUE NOT NULL, " +
                         "%s TEXT NOT NULL, " +
                         "%s REAL NOT NULL, " +
                         "%s REAL NOT NULL, " +
@@ -37,6 +37,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         String SQL_CREATE_WEATHER_TABLE = String.format("CREATE TABLE %s " +
                         "( %s INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "%s INTEGER NOT NULL, " +
+                        "%s INTEGER NOT NULL, " +
                         "%s TEXT NOT NULL, " +
                         "%s REAL NOT NULL, " +
                         "%s REAL NOT NULL, " +
@@ -50,6 +51,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherContract.WeatherEntry.TABLE_NAME,
                 WeatherContract.WeatherEntry._ID,
                 WeatherContract.WeatherEntry.COLUMN_LOC_KEY,
+                WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
                 WeatherContract.WeatherEntry.COLUMN_DATE,
                 WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
                 WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,

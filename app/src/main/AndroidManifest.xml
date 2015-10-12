@@ -29,6 +29,9 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity">
         </activity>
+        <provider
+            android:authorities="akai.example.sunshine.app"
+            android:name="akai.example.sunshine.data.WeatherProvider"/>
     </application>
 
 </manifest>

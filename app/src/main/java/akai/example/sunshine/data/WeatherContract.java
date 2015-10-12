@@ -1,12 +1,23 @@
 package akai.example.sunshine.data;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by akai on 6/10/15.
  */
 public class WeatherContract {
+    public static final String CONTENT_AUTHORITY = "akai.example.sunshine.app";
+
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    public static final String PATH_WEATHER = "weather";
+    public static final String PATH_LOCATION = "location";
 
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
@@ -29,10 +40,52 @@ public class WeatherContract {
         public static final String COLUMN_COORD_LONG = "coord_long";
         public static final String COLUMN_COORD_LAT = "coord_lat";
         public static final String COLUMN_CITY_NAME = "city_name";
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
+        public static final String CONTENT_TYPE = StringUtils.join(new String[]{ContentResolver.CURSOR_DIR_BASE_TYPE, CONTENT_AUTHORITY, PATH_LOCATION}, "/");
+        public static final String CONTENT_ITEM_TYPE = StringUtils.join(new String[]{ContentResolver.CURSOR_ITEM_BASE_TYPE, CONTENT_AUTHORITY, PATH_LOCATION}, "/");
+
+        public static Uri buildLocationUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
 
     /* Inner class that defines the table contents of the weather table */
     public static final class WeatherEntry implements BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();
+
+        public static final String CONTENT_TYPE = StringUtils.join(new String[]{ContentResolver.CURSOR_DIR_BASE_TYPE, CONTENT_AUTHORITY, PATH_WEATHER}, "/");
+        public static final String CONTENT_ITEM_TYPE = StringUtils.join(new String[]{ContentResolver.CURSOR_ITEM_BASE_TYPE, CONTENT_AUTHORITY, PATH_WEATHER}, "/");
+
+        public static Uri buildWeatherUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildWeatherLocation(String locationSetting) {
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
+        }
+
+        public static Uri buildWeatherLocationWithStartDate(String locationSetting, long startDate) {
+            long normalizedDate = normalizeDate(startDate);
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
+        }
+
+        public static Uri buildWeatherLocationWithDate(String locationQuery, long testDate) {
+            return CONTENT_URI.buildUpon().appendPath(locationQuery).appendPath(Long.toString(normalizeDate(testDate))).build();
+        }
+
+        public static String getLocationSettingFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static long getDateFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getStartDateFromUri(Uri uri) {
+            String dateString = uri.getQueryParameter(COLUMN_DATE);
+            return StringUtils.isEmpty(dateString) ? 0 : Long.parseLong(dateString);
+        }
 
         public static final String TABLE_NAME = "weather";
 
