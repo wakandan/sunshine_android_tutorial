@@ -2,7 +2,6 @@ package akai.example.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -22,8 +21,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        mLocation = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default));
+        mLocation = Utility.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment, new MainActivityFragment(), FORECASTFRAGMENT_TAG).commit();
@@ -65,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         Log.v(LOG_TAG, "onResume");
         String location = Utility.getPreferredLocation(this);
-        if (StringUtils.equals(Utility.getPreferredLocation(this), mLocation)) {
+        if (!StringUtils.equals(Utility.getPreferredLocation(this), mLocation)) {
             MainActivityFragment ff = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
             if (ff != null) {
                 ff.onLocationChanged();
@@ -74,6 +72,8 @@ public class MainActivity extends ActionBarActivity {
                 Log.v(LOG_TAG, "Can not find fragment");
             }
             mLocation = location;
+        } else {
+            Log.v(LOG_TAG, "Failed to detect change in the location configuration");
         }
     }
 

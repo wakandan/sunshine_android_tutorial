@@ -66,7 +66,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     public void onLocationChanged(){
-        fetchWeather();
+//        fetchWeather();
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
