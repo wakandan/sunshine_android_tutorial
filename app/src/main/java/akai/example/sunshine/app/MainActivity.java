@@ -2,20 +2,32 @@ package akai.example.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class MainActivity extends ActionBarActivity {
 
     final String LOG_TAG = getClass().getName();
 
+    private String mLocation;
+
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         Log.v(LOG_TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+        mLocation = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        setContentView(R.layout.activity_main);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment, new MainActivityFragment(), FORECASTFRAGMENT_TAG).commit();
+        }
     }
 
     @Override
@@ -47,24 +59,38 @@ public class MainActivity extends ActionBarActivity {
         Log.v(LOG_TAG, "onStart");
         // The activity is about to become visible.
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         Log.v(LOG_TAG, "onResume");
-        // The activity has become visible (it is now "resumed").
+        String location = Utility.getPreferredLocation(this);
+        if (StringUtils.equals(Utility.getPreferredLocation(this), mLocation)) {
+            MainActivityFragment ff = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if (ff != null) {
+                ff.onLocationChanged();
+                Log.v(LOG_TAG, "Fragment changed");
+            } else {
+                Log.v(LOG_TAG, "Can not find fragment");
+            }
+            mLocation = location;
+        }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         Log.v(LOG_TAG, "onPause");
         // Another activity is taking focus (this activity is about to be "paused").
     }
+
     @Override
     protected void onStop() {
         super.onStop();
         Log.v(LOG_TAG, "onStop");
         // The activity is no longer visible (it is now "stopped")
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
