@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity {
         mLocation = Utility.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment, new MainActivityFragment(), FORECASTFRAGMENT_TAG).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new MainActivityFragment(), FORECASTFRAGMENT_TAG).commit();
         }
     }
 
@@ -49,13 +49,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.v(LOG_TAG, "onStart");
-        // The activity is about to become visible.
     }
 
     @Override
