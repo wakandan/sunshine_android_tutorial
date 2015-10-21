@@ -131,10 +131,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         boolean isMetric = Utility.isMetric(getActivity());
 
-        String high = Utility.formatTemperature(
+        String high = Utility.formatTemperature(getActivity(),
                 data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
 
-        String low = Utility.formatTemperature(
+        String low = Utility.formatTemperature(this.getActivity(),
                 data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
         return String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
