@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +42,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.LocationEntry.COLUMN_COORD_LAT,
-            WeatherContract.LocationEntry.COLUMN_COORD_LONG
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG,
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE
     };
 
     // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
@@ -55,6 +57,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     static final int COL_WEATHER_CONDITION_ID = 6;
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
+    static final int COL_PRESSURE = 9;
 
     public MainActivityFragment() {
     }
@@ -65,7 +68,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         fetchWeather();
     }
 
-    public void onLocationChanged(){
+    public void onLocationChanged() {
 //        fetchWeather();
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
@@ -136,7 +139,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
-                    Intent intent = new Intent(getActivity(), DetailActivity.class).setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting, cursor.getLong(COL_WEATHER_DATE)));
+                    Log.v(getClass().getName(), "current date: " + cursor.getLong(COL_WEATHER_DATE));
+                    Uri weatherLocationWithDateUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
+                            cursor.getLong(COL_WEATHER_DATE));
+                    Intent intent = new Intent(getActivity(), DetailActivity.class).setData(weatherLocationWithDateUri);
                     startActivity(intent);
                 }
             }
