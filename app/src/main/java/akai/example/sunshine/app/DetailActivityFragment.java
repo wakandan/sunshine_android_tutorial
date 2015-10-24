@@ -35,7 +35,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             WeatherEntry.COLUMN_MAX_TEMP,
             WeatherEntry.COLUMN_MIN_TEMP,
             WeatherEntry.COLUMN_PRESSURE,
-            WeatherEntry.COLUMN_WIND_SPEED
+            WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherEntry.COLUMN_DEGREES
     };
 
     // these constants correspond to the projection defined above, and must change if the
@@ -47,6 +48,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private static final int COL_WEATHER_MIN_TEMP = 4;
     private static final int COL_WEATHER_PRESSURE = 5;
     private static final int COL_WEATHER_WIND_SPEED = 6;
+    private static final int COL_WEATHER_WIND_DIRECTION = 7;
 
     private TextView textView;
     private ShareActionProvider shareActionProvider;
@@ -57,6 +59,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView forecastTextView;
     private TextView pressureTextView;
     private TextView windTextView;
+    private TextView longDateTextView;
 
     public DetailActivityFragment() {
         setHasOptionsMenu(true);
@@ -72,6 +75,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         dateTextView = (TextView) rootView.findViewById(R.id.list_item_date_textview);
+        longDateTextView = (TextView) rootView.findViewById(R.id.list_item_long_date_textview);
         maxTempTextView = (TextView) rootView.findViewById(R.id.list_item_high_textview);
         minTempTextView = (TextView) rootView.findViewById(R.id.list_item_low_textview);
         forecastTextView = (TextView) rootView.findViewById(R.id.list_item_forecast_textview);
@@ -129,23 +133,28 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         Log.v(getClass().getName(), "In onLoadFinished");
-        while (data.moveToNext()) {
-            Log.v(getClass().getName(), "Date: " + data.getLong(COL_WEATHER_DATE));
-        }
         if (data != null && data.moveToFirst()) {
-            Log.v(getClass().getName(), "Cursor date: " + data.getLong(COL_WEATHER_DATE));
-            dateTextView.setText(Utility.getFriendlyDayString(getActivity(), data.getLong(COL_WEATHER_DATE)));
-            forecastTextView.setText(data.getString(COL_WEATHER_DESC));
-            maxTempTextView.setText(Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MAX_TEMP), Utility.isMetric(getActivity())));
-            minTempTextView.setText(Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP), Utility.isMetric(getActivity())));
+            long date = data.getLong(COL_WEATHER_DATE);
+            Log.v(getClass().getName(), "Cursor date: " + date);
+            String dateText = Utility.getFriendlyDayString(getActivity(), date);
+            String description = data.getString(COL_WEATHER_DESC);
+            boolean isMetric = Utility.isMetric(getActivity());
+            String high = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
+            String low = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
+            maxTempTextView.setText(high);
+            dateTextView.setText(dateText);
+            forecastTextView.setText(description);
+            minTempTextView.setText(low);
+            longDateTextView.setText(Utility.getFormattedMonthDay(getActivity(), date));
             pressureTextView.setText(String.format("Pressure: %.2f", data.getDouble(COL_WEATHER_PRESSURE)));
-            windTextView.setText(String.format("Wind Speed: %.2f", data.getDouble(COL_WEATHER_WIND_SPEED)));
-
+            windTextView.setText(Utility.getFormattedWind(getActivity(), data.getFloat(COL_WEATHER_WIND_SPEED), data.getFloat(COL_WEATHER_WIND_DIRECTION)));
+            // We still need this for the share intent
+            mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
+            if (shareActionProvider != null) {
+                shareActionProvider.setShareIntent(getShareForeCastIntent());
+            }
         } else {
             Log.v(getClass().getName(), "No data");
-        }
-        if (shareActionProvider != null) {
-            shareActionProvider.setShareIntent(getShareForeCastIntent());
         }
     }
 
