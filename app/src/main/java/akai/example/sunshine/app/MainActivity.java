@@ -15,16 +15,26 @@ public class MainActivity extends ActionBarActivity {
 
     private String mLocation;
 
-    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mLocation = Utility.getPreferredLocation(this);
+
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new MainActivityFragment(), FORECASTFRAGMENT_TAG).commit();
+        if (findViewById(R.id.weather_detail_container) != null) {
+            mTwoPane = true;
+            Log.v(getClass().getName(), "2-pane layout detected");
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, new DetailFragment(), DETAIL_FRAGMENT_TAG).commit();
+            }
+        } else {
+            Log.v(getClass().getName(), "1-pane layout detected");
+            mTwoPane = false;
         }
     }
 
@@ -57,7 +67,8 @@ public class MainActivity extends ActionBarActivity {
         Log.v(LOG_TAG, "onResume");
         String location = Utility.getPreferredLocation(this);
         if (!StringUtils.equals(Utility.getPreferredLocation(this), mLocation)) {
-            MainActivityFragment ff = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            //need to check here
+            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
             if (ff != null) {
                 ff.onLocationChanged();
                 Log.v(LOG_TAG, "Fragment changed");

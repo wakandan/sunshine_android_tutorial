@@ -38,11 +38,11 @@ public class ForecastAdapter extends CursorAdapter {
      */
     private String convertCursorRowToUXFormat(Cursor cursor) {
         String highAndLow = formatHighLows(
-                cursor.getDouble(MainActivityFragment.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(MainActivityFragment.COL_WEATHER_MIN_TEMP));
+                cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
+                cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
 
-        return Utility.formatDate(cursor.getLong(MainActivityFragment.COL_WEATHER_DATE)) +
-                " - " + cursor.getString(MainActivityFragment.COL_WEATHER_DESC) +
+        return Utility.formatDate(cursor.getLong(ForecastFragment.COL_WEATHER_DATE)) +
+                " - " + cursor.getString(ForecastFragment.COL_WEATHER_DESC) +
                 " - " + highAndLow;
     }
 
@@ -64,11 +64,21 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        int weatherConditionId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.forecastTextView.setText(cursor.getString(MainActivityFragment.COL_WEATHER_DESC));
-        viewHolder.dateTextView.setText(Utility.getFriendlyDayString(context, cursor.getLong(MainActivityFragment.COL_WEATHER_DATE)));
-        viewHolder.highTempTextView.setText(Utility.formatTemperature(context, cursor.getDouble(MainActivityFragment.COL_WEATHER_MAX_TEMP), Utility.isMetric(context)));
-        viewHolder.lowTempTextView.setText(Utility.formatTemperature(context, cursor.getDouble(MainActivityFragment.COL_WEATHER_MIN_TEMP), Utility.isMetric(context)));
+        viewHolder.forecastTextView.setText(cursor.getString(ForecastFragment.COL_WEATHER_DESC));
+        viewHolder.dateTextView.setText(Utility.getFriendlyDayString(context, cursor.getLong(ForecastFragment.COL_WEATHER_DATE)));
+        viewHolder.highTempTextView.setText(Utility.formatTemperature(context, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP), Utility.isMetric(context)));
+        viewHolder.lowTempTextView.setText(Utility.formatTemperature(context, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP), Utility.isMetric(context)));
+        int viewType = getItemViewType(cursor.getPosition());
+        switch (viewType) {
+            case VIEW_TYPE_TODAY:
+                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherConditionId));
+                break;
+            case VIEW_TYPE_FUTURE_DAY:
+                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherConditionId));
+                break;
+        }
     }
 
     @Override
