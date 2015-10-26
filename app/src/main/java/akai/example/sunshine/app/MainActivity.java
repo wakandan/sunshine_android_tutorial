@@ -1,6 +1,7 @@
 package akai.example.sunshine.app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -9,7 +10,9 @@ import android.view.MenuItem;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class MainActivity extends ActionBarActivity {
+import akai.example.sunshine.interfaces.IWeatherItemSelected;
+
+public class MainActivity extends ActionBarActivity implements IWeatherItemSelected {
 
     final String LOG_TAG = getClass().getName();
 
@@ -70,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
             //need to check here
             ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
             if (ff != null) {
-                ff.onLocationChanged();
+                ff.onLocationChanged(location);
                 Log.v(LOG_TAG, "Fragment changed");
             } else {
                 Log.v(LOG_TAG, "Can not find fragment");
@@ -102,4 +105,19 @@ public class MainActivity extends ActionBarActivity {
         // The activity is about to be destroyed.
     }
 
+    @Override
+    public void onItemSelected(Uri dateUri) {
+        //if two pane, show the detail in the detail fragment
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI, dateUri);
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, fragment, DETAIL_FRAGMENT_TAG).commit();
+        } else {
+            //if 1-pane, show the detail in a new activity
+            Intent intent = new Intent(this, DetailActivity.class).setData(dateUri);
+            startActivity(intent);
+        }
+    }
 }
