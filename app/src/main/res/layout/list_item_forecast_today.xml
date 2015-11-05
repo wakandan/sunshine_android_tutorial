@@ -3,37 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/touch_selector"
-    android:gravity="center_horizontal"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"
+        android:gravity="left"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/list_item_date_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Today, June 24" />
+            android:text="Today, June 24"
+            android:textAppearance="?android:textAppearanceLarge" />
 
         <TextView
             android:id="@+id/list_item_high_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="21"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textSize="72sp" />
 
         <TextView
             android:id="@+id/list_item_low_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="8"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textSize="36sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,14 +44,15 @@
 
         <ImageView
             android:id="@+id/list_item_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/list_item_forecast_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear" />
+            android:text="Clear"
+            android:textAppearance="?android:textAppearanceLarge" />
     </LinearLayout>
 </LinearLayout>
