@@ -27,7 +27,6 @@ public class MainActivity extends ActionBarActivity implements IWeatherItemSelec
         Log.v(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mLocation = Utility.getPreferredLocation(this);
-
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.weather_detail_container) != null) {
             mTwoPane = true;
@@ -38,6 +37,13 @@ public class MainActivity extends ActionBarActivity implements IWeatherItemSelec
         } else {
             Log.v(getClass().getName(), "1-pane layout detected");
             mTwoPane = false;
+            //remove the black shadow under the action bar
+            getSupportActionBar().setElevation(0);
+        }
+
+        ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+        if(forecastFragment!=null){
+            forecastFragment.setUseTodayLayout(!mTwoPane);
         }
     }
 
