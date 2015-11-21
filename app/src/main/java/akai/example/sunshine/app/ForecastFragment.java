@@ -22,6 +22,7 @@ import android.widget.Toast;
 import akai.example.sunshine.data.WeatherContract;
 import akai.example.sunshine.interfaces.ILocationChanged;
 import akai.example.sunshine.interfaces.IWeatherItemSelected;
+import akai.example.sunshine.sync.SunshineSyncAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -71,7 +72,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onStart() {
         super.onStart();
-        fetchWeather();
+//        fetchWeather();
     }
 
     @Override
@@ -120,7 +121,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void fetchWeather() {
-        new FetchWeatherTask(getActivity()).execute(Utility.getPreferredLocation(getActivity()));
+//        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+//        Intent intent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+//        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+//        PendingIntent alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, alarmIntent);
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     private ForecastAdapter mForecastAdapter;
@@ -202,7 +208,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void setUseTodayLayout(boolean b) {
         mUseTodayLayout = b;
-        if(mForecastAdapter!=null){
+        if (mForecastAdapter != null) {
             mForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
         }
     }
