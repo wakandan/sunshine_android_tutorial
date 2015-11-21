@@ -39,8 +39,6 @@
             android:enabled="true"
             android:exported="false"
             android:syncable="true" />
-        <service android:name="akai.example.sunshine.service.SunshineService" />
-        <receiver android:name="akai.example.sunshine.service.SunshineService$AlarmReceiver" />
         <service android:name="akai.example.sunshine.sync.SunshineAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
