@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Vector;
 
 import akai.example.sunshine.app.DetailActivity;
@@ -413,6 +414,15 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 cVVector.toArray(cvArray);
                 // Student: call bulkInsert to add the weatherEntries to the database here
                 int affectedRows = this.getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                //only delete off old data if there's inserted data
+                if (affectedRows > 0) {
+                    Calendar cal = Calendar.getInstance(); //Get's a calendar object with the current time.
+                    cal.add(Calendar.DATE, -1); //Signifies yesterday's date
+                    int numDeletedRows = getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                            WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+                            new String[]{Long.toString(dayTime.setJulianDay(julianStartDay - 1))});
+                    Log.d(LOG_TAG, "# deleted rows: " + numDeletedRows);
+                }
             }
 
             boolean displayNotifications = PreferenceManager.getDefaultSharedPreferences(getContext())
@@ -425,20 +435,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
             // Students: Uncomment the next lines to display what what you stored in the bulkInsert
+            showInsertedData(cVVector, locationSetting);
 
-            Cursor cur = this.getContext().getContentResolver().query(WeatherContract.WeatherEntry.buildWeatherLocation(locationSetting),
-                    null, WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry.COLUMN_DATE + " >= ?",
-                    new String[]{WeatherContract.normalizeDate(System.currentTimeMillis()) + ""},
-                    WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
-
-            cVVector = new Vector<ContentValues>(cur.getCount());
-            if (cur.moveToFirst()) {
-                do {
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-                    cVVector.add(cv);
-                } while (cur.moveToNext());
-            }
 
             Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
         } catch (JSONException e) {
@@ -446,6 +444,22 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void showInsertedData(Vector<ContentValues> cVVector, String locationSetting) {
+        Cursor cur = this.getContext().getContentResolver().query(WeatherContract.WeatherEntry.buildWeatherLocation(locationSetting),
+                null, WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry.COLUMN_DATE + " >= ?",
+                new String[]{WeatherContract.normalizeDate(System.currentTimeMillis()) + ""},
+                WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
+
+        cVVector = new Vector<ContentValues>(cur.getCount());
+        if (cur.moveToFirst()) {
+            do {
+                ContentValues cv = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(cur, cv);
+                cVVector.add(cv);
+            } while (cur.moveToNext());
+        }
     }
 
     /**
