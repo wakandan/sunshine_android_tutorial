@@ -24,4 +24,6 @@ public class DetailActivity extends ActionBarActivity implements IWeatherItemSel
     public void onItemSelected(Uri dateUri) {
         getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, new DetailFragment()).commit();
     }
+
+
 }

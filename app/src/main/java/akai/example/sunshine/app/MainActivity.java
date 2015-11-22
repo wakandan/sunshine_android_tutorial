@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import org.apache.commons.lang3.StringUtils;
 
 import akai.example.sunshine.interfaces.IWeatherItemSelected;
+import akai.example.sunshine.sync.SunshineSyncAdapter;
 
 public class MainActivity extends ActionBarActivity implements IWeatherItemSelected {
 
@@ -42,9 +43,10 @@ public class MainActivity extends ActionBarActivity implements IWeatherItemSelec
         }
 
         ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
-        if(forecastFragment!=null){
+        if (forecastFragment != null) {
             forecastFragment.setUseTodayLayout(!mTwoPane);
         }
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override

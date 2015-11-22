@@ -76,6 +76,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        long dateFromUri = WeatherEntry.getDateFromUri(mUri);
+        String friendlyDate = Utility.formatDate(dateFromUri);
+        getActivity().setTitle(friendlyDate);
         super.onActivityCreated(savedInstanceState);
     }
 

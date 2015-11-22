@@ -11,6 +11,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
+import akai.example.sunshine.sync.SunshineSyncAdapter;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -41,8 +43,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString(getString(R.string.pref_location_key), stringValue);
             editor.commit();
+            SunshineSyncAdapter.syncImmediately(this);
         }
-        return false;
+        return true;
     }
 
     @Override
